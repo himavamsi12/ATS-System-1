@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Car, Camera, Plus, AlertTriangle, CheckCircle, Clock, Eye, Settings, Gauge, Shield, Wrench, Zap, X, Upload, ArrowLeft, Play, RotateCcw, Send, Pause } from 'lucide-react'
+import { Car, Camera, Plus, AlertTriangle, CheckCircle, Clock, Eye, Settings, Gauge, Shield, Wrench, Zap, X, Upload, ArrowLeft, Play, RotateCcw, Send, Pause, Search } from 'lucide-react'
 
 const Tests = () => {
-  const [currentView, setCurrentView] = useState('inspection') // 'inspection', 'functional-tests', 'test-execution', 'test-results'
+  const [currentView, setCurrentView] = useState('test-selection') // 'test-selection', 'visual-test', 'functional-test', 'test-execution', 'test-results'
   const [currentTest, setCurrentTest] = useState(null)
   const [testResults, setTestResults] = useState({})
   const [liveReading, setLiveReading] = useState(0)
@@ -11,6 +11,8 @@ const Tests = () => {
   const [isTestRunning, setIsTestRunning] = useState(false)
   const [progressValue, setProgressValue] = useState(0)
   const [showProgressAfterDelay, setShowProgressAfterDelay] = useState(false)
+  const [bookingId, setBookingId] = useState('')
+  const [vehicleInfo, setVehicleInfo] = useState(null)
 
   const [inspectionData, setInspectionData] = useState({
     plateNumber: '',
@@ -313,6 +315,26 @@ const Tests = () => {
     return () => clearInterval(interval)
   }, [isTestRunning, testDuration, currentTest, showProgressAfterDelay])
 
+  const handleBookingIdSearch = () => {
+    // Simulate fetching vehicle information based on booking ID
+    if (bookingId.trim()) {
+      setVehicleInfo({
+        plateNumber: 'ABC-1234',
+        vehicleModel: 'Honda Civic',
+        year: '2020',
+        ownerName: 'John Smith',
+        bookingDate: '2025-01-02',
+        testType: 'Annual Inspection'
+      })
+      setInspectionData({
+        plateNumber: 'ABC-1234',
+        vehicleModel: 'Honda Civic',
+        year: '2020',
+        technicianName: 'John Smith'
+      })
+    }
+  }
+
   const handleInputChange = (field, value) => {
     setInspectionData(prev => ({
       ...prev,
@@ -443,7 +465,7 @@ const Tests = () => {
   }
 
   const handleSubmitTest = () => {
-    setCurrentView('functional-tests')
+    setCurrentView('functional-test')
     setCurrentTest(null)
   }
 
@@ -543,7 +565,224 @@ const Tests = () => {
     return 4 - Object.keys(photos).length
   }
 
-  // Render different views based on current state
+  // Test Selection View (Initial View)
+  if (currentView === 'test-selection') {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Vehicle Testing System</h2>
+            <p className="text-gray-600 text-lg">Select the type of test you want to perform</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Visual Test Button */}
+            <div 
+              className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-8 cursor-pointer hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 transition-all duration-300 group"
+              onClick={() => setCurrentView('visual-test')}
+            >
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-full mb-6 group-hover:bg-blue-700 transition-colors">
+                  <Eye className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Visual Test</h3>
+                <p className="text-gray-600 mb-6">Perform visual inspection with photo documentation for vehicle components</p>
+                <div className="text-sm text-blue-600 font-medium">
+                  • Photo documentation
+                  • Component inspection
+                  • Visual verification
+                </div>
+              </div>
+            </div>
+
+            {/* Functional Test Button */}
+            <div 
+              className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-xl p-8 cursor-pointer hover:from-green-100 hover:to-green-200 hover:border-green-300 transition-all duration-300 group"
+              onClick={() => setCurrentView('functional-test')}
+            >
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-green-600 rounded-full mb-6 group-hover:bg-green-700 transition-colors">
+                  <Settings className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Functional Test</h3>
+                <p className="text-gray-600 mb-6">Perform automated functional tests with live readings and measurements</p>
+                <div className="text-sm text-green-600 font-medium">
+                  • Automated testing
+                  • Live measurements
+                  • Performance analysis
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Visual Test View
+  if (currentView === 'visual-test') {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => setCurrentView('test-selection')}
+              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to Test Selection
+            </button>
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Visual Test</h2>
+                <p className="text-gray-600">Enter booking ID and perform visual inspection</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-500 mb-1">Progress</div>
+              <div className="text-lg font-semibold text-gray-900">{getCompletedCategories()}/15</div>
+            </div>
+          </div>
+
+          {/* Booking ID Search */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Booking ID</label>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={bookingId}
+                onChange={(e) => setBookingId(e.target.value)}
+                placeholder="Enter booking ID to fetch vehicle information"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
+                onClick={handleBookingIdSearch}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Search
+              </button>
+            </div>
+          </div>
+
+          {/* Vehicle Information Display */}
+          {vehicleInfo && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plate Number</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.plateNumber}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Model</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.vehicleModel}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.year}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Owner Name</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.ownerName}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Booking Date</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.bookingDate}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Test Type</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.testType}</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Inspection Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {inspectionCategories.map((category) => {
+            const Icon = category.icon
+            const remainingPhotos = getRemainingPhotos(category.id)
+            const status = getCategoryStatus(category.id)
+            
+            return (
+              <div key={category.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className={`p-2 bg-blue-100 rounded-lg mr-3`}>
+                      <Icon className={`h-5 w-5 text-blue-600`} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900 text-sm">{category.name}</h3>
+                      <p className="text-xs text-gray-500">{category.photosRequired} photos (optional)</p>
+                    </div>
+                  </div>
+                  {getStatusIcon(category.id)}
+                </div>
+
+                {/* Photo Upload Grid */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {renderPhotoSlots(category)}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-2">
+                  {remainingPhotos > 0 && (
+                    <button 
+                      onClick={() => handleBulkUpload(category.id)}
+                      className="w-full flex items-center justify-center px-3 py-2 text-sm text-blue-600 border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
+                    >
+                      <Upload className="h-4 w-4 mr-1" />
+                      Add Photos ({remainingPhotos} remaining)
+                    </button>
+                  )}
+                  
+                  {status === 'completed' && (
+                    <div className="w-full flex items-center justify-center px-3 py-2 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Complete
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Bottom Status Bar */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center">
+                <Camera className="h-5 w-5 text-blue-600 mr-2" />
+                <span className="text-sm font-medium text-gray-900">Total Photos: {getTotalPhotos()}/60</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                <span className="text-sm font-medium text-gray-900">Categories Complete: {getCompletedCategories()}/15</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center text-blue-600">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                <span className="text-sm font-medium">Visual inspection complete</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-3 text-sm text-blue-600">
+            <Clock className="h-4 w-4 inline mr-1" />
+            Visual Test Progress: All photos are optional. Document vehicle components as needed.
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Render test execution and results views (same as before)
   if (currentView === 'test-results') {
     const test = functionalTests.find(t => t.id === currentTest.id)
     const result = testResults[currentTest.id]
@@ -622,7 +861,7 @@ const Tests = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <button
-              onClick={() => setCurrentView('functional-tests')}
+              onClick={() => setCurrentView('functional-test')}
               className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
@@ -767,15 +1006,23 @@ const Tests = () => {
     )
   }
 
-  if (currentView === 'functional-tests') {
+  // Functional Test View
+  if (currentView === 'functional-test') {
     return (
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => setCurrentView('test-selection')}
+              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to Test Selection
+            </button>
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg mr-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+                <Settings className="h-6 w-6 text-green-600" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Functional Tests</h2>
@@ -788,25 +1035,48 @@ const Tests = () => {
             </div>
           </div>
 
-          {/* Vehicle Information Display */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Plate Number</label>
-              <div className="text-gray-900 font-medium">{inspectionData.plateNumber || 'Not specified'}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Model</label>
-              <div className="text-gray-900 font-medium">{inspectionData.vehicleModel || 'Not specified'}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-              <div className="text-gray-900 font-medium">{inspectionData.year || 'Not specified'}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Technician Name</label>
-              <div className="text-gray-900 font-medium">{inspectionData.technicianName || 'Not specified'}</div>
+          {/* Booking ID Search */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Booking ID</label>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={bookingId}
+                onChange={(e) => setBookingId(e.target.value)}
+                placeholder="Enter booking ID to fetch vehicle information"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
+                onClick={handleBookingIdSearch}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Search
+              </button>
             </div>
           </div>
+
+          {/* Vehicle Information Display */}
+          {vehicleInfo && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plate Number</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.plateNumber}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Model</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.vehicleModel}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.year}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Owner Name</label>
+                <div className="text-gray-900 font-medium">{vehicleInfo.ownerName}</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Functional Tests Grid */}
@@ -873,158 +1143,7 @@ const Tests = () => {
     )
   }
 
-  // Default inspection view
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg mr-3">
-              <Car className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Vehicle Inspection</h2>
-              <p className="text-gray-600">Upload photos for each inspection category (optional)</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500 mb-1">Progress</div>
-            <div className="text-lg font-semibold text-gray-900">{getCompletedCategories()}/15</div>
-          </div>
-        </div>
-
-        {/* Vehicle Information Form */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Plate Number</label>
-            <input
-              type="text"
-              value={inspectionData.plateNumber}
-              onChange={(e) => handleInputChange('plateNumber', e.target.value)}
-              placeholder="Enter plate number"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Model</label>
-            <input
-              type="text"
-              value={inspectionData.vehicleModel}
-              onChange={(e) => handleInputChange('vehicleModel', e.target.value)}
-              placeholder="Enter vehicle model"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
-            <input
-              type="text"
-              value={inspectionData.year}
-              onChange={(e) => handleInputChange('year', e.target.value)}
-              placeholder="Enter year"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Technician Name</label>
-            <input
-              type="text"
-              value={inspectionData.technicianName}
-              onChange={(e) => handleInputChange('technicianName', e.target.value)}
-              placeholder="Enter technician name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Inspection Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {inspectionCategories.map((category) => {
-          const Icon = category.icon
-          const remainingPhotos = getRemainingPhotos(category.id)
-          const status = getCategoryStatus(category.id)
-          
-          return (
-            <div key={category.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div className={`p-2 bg-blue-100 rounded-lg mr-3`}>
-                    <Icon className={`h-5 w-5 text-blue-600`} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900 text-sm">{category.name}</h3>
-                    <p className="text-xs text-gray-500">{category.photosRequired} photos (optional)</p>
-                  </div>
-                </div>
-                {getStatusIcon(category.id)}
-              </div>
-
-              {/* Photo Upload Grid */}
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {renderPhotoSlots(category)}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="space-y-2">
-                {remainingPhotos > 0 && (
-                  <button 
-                    onClick={() => handleBulkUpload(category.id)}
-                    className="w-full flex items-center justify-center px-3 py-2 text-sm text-blue-600 border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
-                  >
-                    <Upload className="h-4 w-4 mr-1" />
-                    Add Photos ({remainingPhotos} remaining)
-                  </button>
-                )}
-                
-                {status === 'completed' && (
-                  <div className="w-full flex items-center justify-center px-3 py-2 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    Complete
-                  </div>
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Bottom Status Bar */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center">
-              <Camera className="h-5 w-5 text-blue-600 mr-2" />
-              <span className="text-sm font-medium text-gray-900">Total Photos: {getTotalPhotos()}/60</span>
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-sm font-medium text-gray-900">Categories Complete: {getCompletedCategories()}/15</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-blue-600">
-              <CheckCircle className="h-4 w-4 mr-1" />
-              <span className="text-sm font-medium">Ready to proceed</span>
-            </div>
-            <button 
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              onClick={() => setCurrentView('functional-tests')}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-        
-        <div className="mt-3 text-sm text-blue-600">
-          <Clock className="h-4 w-4 inline mr-1" />
-          Inspection Progress: All fields and photos are optional. You can proceed to functional tests at any time.
-        </div>
-      </div>
-    </div>
-  )
+  return null
 }
 
 export default Tests
