@@ -13,6 +13,8 @@ const Tests = () => {
   const [showProgressAfterDelay, setShowProgressAfterDelay] = useState(false)
   const [bookingId, setBookingId] = useState('')
   const [vehicleInfo, setVehicleInfo] = useState(null)
+  const [testBookingIds, setTestBookingIds] = useState({})
+  const [testVehicleInfos, setTestVehicleInfos] = useState({})
 
   const [inspectionData, setInspectionData] = useState({
     plateNumber: '',
@@ -333,6 +335,32 @@ const Tests = () => {
         technicianName: 'John Smith'
       })
     }
+  }
+
+  const handleTestBookingSearch = (testId, bookingId) => {
+    if (bookingId.trim()) {
+      // Dummy data for each test
+      const dummyData = {
+        bookingId: bookingId, // Store the entered booking ID
+        plateNumber: `ABC-${Math.floor(Math.random() * 9000) + 1000}`,
+        vehicleModel: ['Honda Civic', 'Toyota Camry', 'Ford Focus', 'BMW X3'][Math.floor(Math.random() * 4)],
+        year: ['2020', '2021', '2022', '2023'][Math.floor(Math.random() * 4)],
+        ownerName: ['John Smith', 'Sarah Johnson', 'Mike Wilson', 'Lisa Brown'][Math.floor(Math.random() * 4)],
+        bookingDate: '2025-01-02',
+        testType: 'Annual Inspection'
+      }
+      setTestVehicleInfos(prev => ({
+        ...prev,
+        [testId]: dummyData
+      }))
+    }
+  }
+
+  const handleTestBookingIdChange = (testId, value) => {
+    setTestBookingIds(prev => ({
+      ...prev,
+      [testId]: value
+    }))
   }
 
   const handleInputChange = (field, value) => {
@@ -1034,49 +1062,6 @@ const Tests = () => {
               <div className="text-lg font-semibold text-gray-900">{getCompletedTests()}/13</div>
             </div>
           </div>
-
-          {/* Booking ID Search */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Booking ID</label>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value={bookingId}
-                onChange={(e) => setBookingId(e.target.value)}
-                placeholder="Enter booking ID to fetch vehicle information"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <button
-                onClick={handleBookingIdSearch}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </button>
-            </div>
-          </div>
-
-          {/* Vehicle Information Display */}
-          {vehicleInfo && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Plate Number</label>
-                <div className="text-gray-900 font-medium">{vehicleInfo.plateNumber}</div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Model</label>
-                <div className="text-gray-900 font-medium">{vehicleInfo.vehicleModel}</div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                <div className="text-gray-900 font-medium">{vehicleInfo.year}</div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Owner Name</label>
-                <div className="text-gray-900 font-medium">{vehicleInfo.ownerName}</div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Functional Tests Grid */}
@@ -1085,9 +1070,11 @@ const Tests = () => {
             const Icon = test.icon
             const result = testResults[test.id]
             const isCompleted = !!result
+            const testBookingId = testBookingIds[test.id] || ''
+            const testVehicleInfo = testVehicleInfos[test.id]
             
             return (
-              <div key={test.id} className={`bg-white rounded-lg shadow-sm border-2 p-6 ${
+              <div key={test.id} className={`bg-white rounded-lg shadow-sm border-2 p-4 ${
                 isCompleted ? (result.passed ? 'border-green-200' : 'border-red-200') : 'border-gray-200'
               }`}>
                 <div className="flex items-center justify-between mb-4">
@@ -1105,6 +1092,57 @@ const Tests = () => {
                   )}
                 </div>
 
+                {/* Booking ID Search for this test */}
+                <div className="mb-4">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Booking ID</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={testBookingId}
+                      onChange={(e) => handleTestBookingIdChange(test.id, e.target.value)}
+                      placeholder="Enter booking ID"
+                      className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <button
+                      onClick={() => handleTestBookingSearch(test.id, testBookingId)}
+                      className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                      <Search className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Vehicle Information for this test */}
+                {testVehicleInfo && (
+                  <div className="mb-4 p-3 bg-gray-50 rounded text-xs">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <span className="font-medium text-gray-700">Booking ID:</span>
+                        <div className="text-gray-900">{testVehicleInfo.bookingId}</div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Plate:</span>
+                        <div className="text-gray-900">{testVehicleInfo.plateNumber}</div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Model:</span>
+                        <div className="text-gray-900">{testVehicleInfo.vehicleModel}</div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Year:</span>
+                        <div className="text-gray-900">{testVehicleInfo.year}</div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Owner:</span>
+                        <div className="text-gray-900">{testVehicleInfo.ownerName}</div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Date:</span>
+                        <div className="text-gray-900">{testVehicleInfo.bookingDate}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {isCompleted && (
                   <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                     <div className="text-sm font-medium text-gray-900">Test Result</div>
