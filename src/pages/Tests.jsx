@@ -882,6 +882,8 @@ const Tests = () => {
   if (currentView === 'test-execution') {
     const test = functionalTests.find(t => t.id === currentTest.id)
     const Icon = test.icon
+    const testVehicleInfo = testVehicleInfos[currentTest.id]
+    const currentTestBookingId = testBookingIds[currentTest.id] || ''
     
     return (
       <div className="space-y-6">
@@ -895,6 +897,7 @@ const Tests = () => {
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Tests
             </button>
+            
             <div className="flex items-center">
               <div className={`p-2 bg-blue-100 rounded-lg mr-3`}>
                 <Icon className="h-6 w-6 text-blue-600" />
@@ -904,8 +907,61 @@ const Tests = () => {
                 <p className="text-gray-600">{test.description}</p>
               </div>
             </div>
+            
+            {/* Booking ID Input Field - Right Side */}
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">Booking ID:</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={currentTestBookingId}
+                  onChange={(e) => handleTestBookingIdChange(currentTest.id, e.target.value)}
+                  placeholder="Enter booking ID"
+                  className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full"
+                />
+                <button
+                  onClick={() => handleTestBookingSearch(currentTest.id, currentTestBookingId)}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                >
+                  <Search className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Vehicle Information Display */}
+        {testVehicleInfo && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <h4 className="text-sm font-medium text-gray-900 mb-3">Vehicle Information</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-gray-700">Booking ID:</span>
+                <div className="text-gray-900">{testVehicleInfo.bookingId}</div>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Plate Number:</span>
+                <div className="text-gray-900">{testVehicleInfo.plateNumber}</div>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Vehicle Model:</span>
+                <div className="text-gray-900">{testVehicleInfo.vehicleModel}</div>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Year:</span>
+                <div className="text-gray-900">{testVehicleInfo.year}</div>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Owner:</span>
+                <div className="text-gray-900">{testVehicleInfo.ownerName}</div>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">Booking Date:</span>
+                <div className="text-gray-900">{testVehicleInfo.bookingDate}</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Test Execution Interface */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1070,8 +1126,6 @@ const Tests = () => {
             const Icon = test.icon
             const result = testResults[test.id]
             const isCompleted = !!result
-            const testBookingId = testBookingIds[test.id] || ''
-            const testVehicleInfo = testVehicleInfos[test.id]
             
             return (
               <div key={test.id} className={`bg-white rounded-lg shadow-sm border-2 p-4 ${
@@ -1092,57 +1146,7 @@ const Tests = () => {
                   )}
                 </div>
 
-                {/* Booking ID Search for this test */}
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Booking ID</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={testBookingId}
-                      onChange={(e) => handleTestBookingIdChange(test.id, e.target.value)}
-                      placeholder="Enter booking ID"
-                      className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <button
-                      onClick={() => handleTestBookingSearch(test.id, testBookingId)}
-                      className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                    >
-                      <Search className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
 
-                {/* Vehicle Information for this test */}
-                {testVehicleInfo && (
-                  <div className="mb-4 p-3 bg-gray-50 rounded text-xs">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <span className="font-medium text-gray-700">Booking ID:</span>
-                        <div className="text-gray-900">{testVehicleInfo.bookingId}</div>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Plate:</span>
-                        <div className="text-gray-900">{testVehicleInfo.plateNumber}</div>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Model:</span>
-                        <div className="text-gray-900">{testVehicleInfo.vehicleModel}</div>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Year:</span>
-                        <div className="text-gray-900">{testVehicleInfo.year}</div>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Owner:</span>
-                        <div className="text-gray-900">{testVehicleInfo.ownerName}</div>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Date:</span>
-                        <div className="text-gray-900">{testVehicleInfo.bookingDate}</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
                 {isCompleted && (
                   <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                     <div className="text-sm font-medium text-gray-900">Test Result</div>
